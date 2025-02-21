@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -17,10 +18,16 @@ public class ProdutoController {
 
     @Autowired
     ProdutoRepository repository;
+    private Double preco;
 
     @GetMapping
-    public ResponseEntity<List<Produto>> findAll(){
-        List<Produto> produtos = repository.findAll();
+    public ResponseEntity<List<Produto>> findAll(@RequestParam(defaultValue = "") String nome){
+        List<Produto> produtos = new ArrayList<>();
+        if (nome.isBlank()){
+            produtos = repository.findAll();
+        } else {
+            produtos = repository.findByNome(nome);
+        }
         return ResponseEntity.ok().body(produtos);
     }
 
@@ -38,6 +45,18 @@ public class ProdutoController {
         repository.save(produto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(produto.getId()).toUri();
         return ResponseEntity.created(uri).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Produto> update(@PathVariable Long id, @RequestBody Produto produto){
+        Produto produtoToUpdate = repository.findById(id).orElse(null);
+        if (produtoToUpdate == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            produto.setId(produtoToUpdate.getId());
+            repository.save(produto);
+        }
+        return ResponseEntity.ok().body(produto);
     }
 
     @DeleteMapping("/{id}")
