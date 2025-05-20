@@ -12,7 +12,7 @@ A **Produtos API** é uma aplicação RESTful desenvolvida com Java e Spring Boo
 
 ## 🧰 Tecnologias Utilizadas
 
-- Java 17+
+- Java 21
 - Spring Boot
 - Spring Web
 - Spring Data JPA
